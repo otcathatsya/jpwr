@@ -4,7 +4,15 @@ import io
 import time
 
 import pandas as pd
-from rsmiBindings import *
+try:
+    from rsmiBindings import *
+except:
+    import sys
+    rocm_path = os.getenv("ROCM_PATH")
+    if rocm_path is None:
+        rocm_path = "/opt/rocm/"
+    sys.path.append(os.path.join(rocm_path, "libexec/rocm_smi/"))
+    from rsmiBindings import *
 from multiprocessing import Process, Queue, Event
 
 def power_loop(queue, event, interval):
