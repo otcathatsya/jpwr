@@ -33,7 +33,30 @@ def power_loop(queue, event, interval):
         last_timestamp = timestamp
     queue.put(power_value_dict)
 
+
+class power(object):
+    def init(self, power_value_dict : dict[str,list[float]]):
+        power_value_dict.update({
+            'gh:Module' : [],
+            'gh:Grace' : [],
+            'gh:CPU' : [],
+            'gh:SysIO' : [],
+        })
+    def measure(self, power_value_dict : dict[str,list[float]]):
+        with open("/sys/class/hwmon/hwmon1/device/power1_average") as f:
+            power_value_dict["gh:Module"].append(1e-6*float(f.read()))
+        with open("/sys/class/hwmon/hwmon2/device/power1_average") as f:
+            power_value_dict["gh:Grace"].append(1e-6*float(f.read()))
+        with open("/sys/class/hwmon/hwmon3/device/power1_average") as f:
+            power_value_dict["gh:CPU"].append(1e-6*float(f.read()))
+        with open("/sys/class/hwmon/hwmon4/device/power1_average") as f:
+            power_value_dict["gh:SysIO"].append(1e-6*float(f.read()))
+
+    def finalize(self, power_value_dict : dict[str,list[float]]):
+        return {}
+
 class GetPower(object):
+
     def __enter__(self):
         self.end_event = Event()
         self.power_queue = Queue()
