@@ -53,35 +53,36 @@ Writing energy_from_counter df to energy_meas/energy_from_counter.csv
 ```
 Grace-Hopper node:
 ```
-ᐅ jpwr --methods gh --df-out energy_meas --df-filetype h5 stress-ng --cpu 24 -t 10
+ᐅ jpwr --methods pynvml gh --df-out energy_meas --df-filetype h5 stress-ng --cpu 24 -t 10
 Measuring Energy while executing ['stress-ng', '--cpu', '24', '-t', '10']
-stress-ng: info:  [28202] setting to a 10 secs run per stressor
-stress-ng: info:  [28202] dispatching hogs: 24 cpu
-stress-ng: info:  [28202] skipped: 0
-stress-ng: info:  [28202] passed: 24: cpu (24)
-stress-ng: info:  [28202] failed: 0
-stress-ng: info:  [28202] metrics untrustworthy: 0
-stress-ng: info:  [28202] successful run completed in 10.05 secs
+stress-ng: info:  [30677] setting to a 10 secs run per stressor
+stress-ng: info:  [30677] dispatching hogs: 24 cpu
+stress-ng: info:  [30677] skipped: 0
+stress-ng: info:  [30677] passed: 24: cpu (24)
+stress-ng: info:  [30677] failed: 0
+stress-ng: info:  [30677] metrics untrustworthy: 0
+stress-ng: info:  [30677] successful run completed in 10.05 secs
 Power data:
-       timestamps  gh:Module  gh:Grace  gh:CPU  gh:SysIO
-0    1.720624e+09    134.209    48.309  46.131     0.409
-1    1.720624e+09    134.209    48.309  46.131     0.409
-2    1.720624e+09    134.209    48.309  46.131     0.409
-3    1.720624e+09    134.209    48.309  46.131     0.409
-4    1.720624e+09    134.209    48.309  46.131     0.409
-..            ...        ...       ...     ...       ...
-196  1.720624e+09    184.575   101.150  98.596     1.048
-197  1.720624e+09    184.575   101.150  98.596     1.048
-198  1.720624e+09    184.575   101.150  98.596     1.048
-199  1.720624e+09    184.533   101.057  98.552     1.064
-200  1.720624e+09    184.533   101.057  98.552     1.064
+       timestamps  pynvml:0  gh:Module  gh:Grace  gh:CPU  gh:SysIO
+0    1.720625e+09    78.558    134.167    48.311  46.133     0.409
+1    1.720625e+09    78.580    134.167    48.311  46.133     0.409
+2    1.720625e+09    78.580    134.167    48.311  46.133     0.409
+3    1.720625e+09    78.545    134.167    48.311  46.133     0.409
+4    1.720625e+09    78.545    134.167    48.311  46.133     0.409
+..            ...       ...        ...       ...     ...       ...
+196  1.720625e+09    79.230    184.490   100.979  98.553     1.048
+197  1.720625e+09    79.260    184.490   100.979  98.553     1.048
+198  1.720625e+09    79.260    184.490   100.979  98.553     1.048
+199  1.720625e+09    79.251    184.490   100.979  98.553     1.048
+200  1.720625e+09    79.251    184.532   100.994  98.552     1.064
 
-[201 rows x 5 columns]
+[201 rows x 6 columns]
 Energy data:
-gh:Module    0.498618
-gh:Grace     0.268936
-gh:CPU       0.261719
-gh:SysIO     0.002778
+pynvml:0     0.220010
+gh:Module    0.498391
+gh:Grace     0.267424
+gh:CPU       0.260401
+gh:SysIO     0.002795
 dtype: float64
 Writing measurements to energy_meas
 Writing power df to energy_meas/power.h5
