@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling","pandas","pynvml"]
+requires = ["hatchling","numpy","pandas","nvidia-ml-py"]
 build-backend = "hatchling.build"
 
 [project]
-name = "jwpr"
-version = "0.0.3"
+name = "jpwr"
+version = "0.0.4"
 authors = [
   { name="Stepan Nassyr", email="s.nassyr@fz-juelich.de" },
 ]
