@@ -27,12 +27,12 @@ sys_methods = {
 def parse_args():
 
     parser = argparse.ArgumentParser(description="jpwr - JSC power measurement tool")
-    parser.add_argument("--gpu_method",
+    parser.add_argument("--gpu-method",
         type=str,
         required=True,
         choices=gpu_methods.keys(),
         help=f"Choose method by which to measure GPU power Available: [{','.join(gpu_methods.keys())}]")
-    parser.add_argument("--sys_method",
+    parser.add_argument("--sys-method",
         type=str,
         choices=sys_methods.keys(),
         help=f"Choose method by which to measure System power: [{','.join(sys_methods.keys())}]")
