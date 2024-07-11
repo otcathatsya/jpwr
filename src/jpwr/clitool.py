@@ -85,15 +85,15 @@ def power_loop(queue, event, interval, power_methods):
 
 class get_power(object):
     
-    def __init__(self, power_methods):
+    def __init__(self, power_methods, interval):
         self.power_methods = power_methods
+        self.interval = interval
     def __enter__(self):
         self.end_event = Event()
         self.power_queue = Queue()
         
-        interval = 100 #ms
         self.pwp = Process(target=power_loop,
-                args=(self.power_queue, self.end_event, interval, self.power_methods))
+                args=(self.power_queue, self.end_event, self.interval, self.power_methods))
         self.pwp.start()
         return self
     def __exit__(self, type, value, traceback):
@@ -111,6 +111,7 @@ class get_power(object):
 
 def parse_args():
 
+    default_interval = 100 #ms
     parser = argparse.ArgumentParser(description="jpwr - JSC power measurement tool")
     parser.add_argument("--methods",
         type=str,
@@ -118,6 +119,10 @@ def parse_args():
         required=True,
         choices=methods.keys(),
         help=f"Choose method by which to measure power. Choices: [{','.join(methods.keys())}]")
+    parser.add_argument("--interval",
+        type=int,
+        default=default_interval,
+        help=f"interval between measurement in ms (default: {default_interval})")
     parser.add_argument("--df-out",
         type=str,
         help=f"Directory to write dataframes with acquired power measurements to")
@@ -147,7 +152,7 @@ def main():
     power_methods = [methods[m]() for m in set(args.methods)]
 
     print(f"Measuring Energy while executing {args.cmd}")
-    with get_power(power_methods) as measured_scope:
+    with get_power(power_methods, args.interval) as measured_scope:
         try:
             result = subprocess.run(args.cmd, text=True)
         except Exception as exc:
@@ -171,16 +176,20 @@ def main():
             os.makedirs(args.df_out)
         if not os.path.isdir(args.df_out):
             raise ValueError(f"{args.df_out} is not a directory")
+
+        import platform
+        suffix = f"{platform.node()}.{os.getpid()}"
+
         save_df = df_filesavers[args.df_filetype]
         print(f"Writing measurements to {args.df_out}")
-        power_path = os.path.join(args.df_out, f"power.{args.df_filetype}")
+        power_path = os.path.join(args.df_out, f"power.{suffix}.{args.df_filetype}")
         print(f"Writing power df to {power_path}")
         save_df(power, power_path)
-        energy_path = os.path.join(args.df_out, f"energy.{args.df_filetype}")
+        energy_path = os.path.join(args.df_out, f"energy.{suffix}.{args.df_filetype}")
         print(f"Writing energy df to {energy_path}")
         save_df(energy, energy_path)
         for k,v in additional.items():
-            additional_path = os.path.join(args.df_out, f"{slugify(k)}.{args.df_filetype}")
+            additional_path = os.path.join(args.df_out, f"{slugify(k)}.{suffix}.{args.df_filetype}")
             print(f"Writing {k} df to {additional_path}")
             save_df(v, additional_path)
 
