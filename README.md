@@ -129,7 +129,7 @@ Writing energy df to energy_meas/energy.1.h5
 Writing energy df to energy_meas/energy.0.h5
 ```
 
-use `--mpi-ranks` to restring measurement to certain mpi ranks:
+use `--mpi-ranks` to restrict energy measurement to specified mpi ranks:
 
 ```
 ᐅ mpirun -n 2 jpwr --methods pynvml --df-out energy_meas --use-mpi --mpi-ranks 0 -- stress-ng --gpu 2
