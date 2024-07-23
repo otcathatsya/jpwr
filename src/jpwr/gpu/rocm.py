@@ -40,7 +40,7 @@ def power_loop(queue, event, interval):
                 byref(energy_resolution),
                 byref(energy_timestamp))
         if rsmi_status_t.RSMI_STATUS_SUCCESS != ret:
-            raise RuntimeError(f"Failed getting Power of device {id}")
+            raise RuntimeError(f"Failed getting Power of device {id}: {ret}")
         start_energy_list.append(round(energy.value*energy_resolution.value,2)) # unit is uJ
 
     while not event.is_set():
@@ -88,6 +88,7 @@ class power(object):
         power_value_dict.update({
             f"rocm:{id}" : [] for id in self.device_list
         })
+        self.dev_pwr_map = { id: True for id in self.device_list }
         self.start_energy_list = []
         for id in self.device_list:
             energy = c_uint64()
@@ -98,14 +99,19 @@ class power(object):
                     byref(energy_resolution),
                     byref(energy_timestamp))
             if rsmi_status_t.RSMI_STATUS_SUCCESS != ret:
-                raise RuntimeError(f"Failed getting Power of device {id}")
+                raise RuntimeError(f"Failed getting Energy of device {id}: {ret}")
+            if 0 == energy.value:
+                self.dev_pwr_map[id] = False
             self.start_energy_list.append(round(energy.value*energy_resolution.value,2)) # unit is uJ
     def measure(self, power_value_dict : dict[str,list[float]]):
         for id in self.device_list:
             power = c_uint32()
-            ret = self.rocmsmi.rsmi_dev_power_ave_get(id, 0, byref(power))
-            if rsmi_status_t.RSMI_STATUS_SUCCESS != ret:
-                raise RuntimeError(f"Failed getting Power of device {id}")
+            if not self.dev_pwr_map[id]:
+                power.value = 0
+            else:
+                ret = self.rocmsmi.rsmi_dev_power_ave_get(id, 0, byref(power))
+                if rsmi_status_t.RSMI_STATUS_SUCCESS != ret:
+                    raise RuntimeError(f"Failed getting Power of device {id}: {ret}")
             power_value_dict[f"rocm:{id}"].append(float(power.value)*1e-6) # value is uW
 
     def finalize(self, power_value_dict : dict[str,list[float]]):
