@@ -154,7 +154,7 @@ def main():
 
     if (args.df_out):
         if not os.path.exists(args.df_out):
-            os.makedirs(args.df_out)
+            os.makedirs(args.df_out, exist_ok=True)
         if not os.path.isdir(args.df_out):
             raise ValueError(f"{args.df_out} is not a directory")
 
