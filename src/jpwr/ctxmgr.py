@@ -1,6 +1,8 @@
 import time
 from multiprocessing import Process, Queue, Event
 
+import pandas as pd
+
 def power_loop(queue, event, interval, power_methods):
     power_value_dict = {
         'timestamps': []
