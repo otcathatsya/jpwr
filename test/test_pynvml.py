@@ -1,4 +1,5 @@
-from jpwr.gpu.pynvml import GetPower
+from jpwr.gpu.pynvml import power
+from jpwr.ctxmgr import get_power
 import time
 
 def main():
@@ -6,7 +7,7 @@ def main():
     
 
 if __name__ == "__main__":
-    with GetPower() as measured_scope:
+    with get_power([power()], 100) as measured_scope:
         print('Measuring Energy during main() call')
         try:
             main()
