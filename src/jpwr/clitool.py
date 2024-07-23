@@ -117,6 +117,8 @@ def main():
     rank = 0
     mpi_ranks = [0]
     if args.use_mpi:
+        import mpi4py
+        mpi4py.rc.finalize = False # do not finalize MPI automaticall
         from mpi4py import MPI
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
