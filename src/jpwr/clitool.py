@@ -70,7 +70,17 @@ def parse_args():
     parser.add_argument("--interval",
         type=int,
         default=default_interval,
-        help=f"interval between measurement in ms (default: {default_interval})")
+        help=f"Interval between measurement in ms (default: {default_interval})")
+    parser.add_argument("--use-mpi",
+        action='store_true',
+        help=f"Use MPI rank in file suffix")
+    parser.add_argument("--mpi-ranks",
+        type=int,
+        nargs='+',
+        help=f"Only gather data on these mpi ranks")
+    parser.add_argument("--df-suffix",
+        type=str,
+        help=f"Suffix to append to created files before the node/pid")
     parser.add_argument("--df-out",
         type=str,
         help=f"Directory to write dataframes with acquired power measurements to")
@@ -96,28 +106,51 @@ def main():
 
     if args.cmd[0] == '--':
         args.cmd = args.cmd[1:]
+
+    if (not args.use_mpi) and args.mpi_ranks:
+        print("--mpi-ranks requires --use-mpi")
+        exit(-2)
+
     
     power_methods = [methods[m]() for m in set(args.methods)]
 
-    print(f"Measuring Energy while executing {args.cmd}")
-    with get_power(power_methods, args.interval) as measured_scope:
+    rank = 0
+    mpi_ranks = [0]
+    if args.mpi_ranks:
+        mpi_ranks = args.mpi_ranks
+        from mpi4py import MPI
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+    
+    if rank in mpi_ranks:
+        print(f"Measuring Energy while executing {args.cmd}")
+        with get_power(power_methods, args.interval) as measured_scope:
+            try:
+                result = subprocess.run(args.cmd, text=True)
+            except Exception as exc:
+                import traceback
+                print(f"Errors occured during power measurement of '{args.cmd}': {exc}")
+                print(f"Traceback: {traceback.format_exc()}")
+        power=measured_scope.df
+        energy,additional = measured_scope.energy()
+        print("Power data:")
+        print(power)
+        print("Energy data:")
+        print(energy)
+        if(additional.items()):
+            print("Additional data:")
+        for k,v in additional.items():
+            print(f"{k}:")
+            print(v)
+    else:
+        print(f"Executing {args.cmd}")
         try:
             result = subprocess.run(args.cmd, text=True)
         except Exception as exc:
             import traceback
-            print(f"Errors occured during power measurement of '{args.cmd}': {exc}")
+            print(f"Errors occured running '{args.cmd}': {exc}")
             print(f"Traceback: {traceback.format_exc()}")
-    power=measured_scope.df
-    energy,additional = measured_scope.energy()
-    print("Power data:")
-    print(power)
-    print("Energy data:")
-    print(energy)
-    if(additional.items()):
-        print("Additional data:")
-    for k,v in additional.items():
-        print(f"{k}:")
-        print(v)
+        exit(0)
 
     if (args.df_out):
         if not os.path.exists(args.df_out):
@@ -127,6 +160,13 @@ def main():
 
         import platform
         suffix = f"{platform.node()}.{os.getpid()}"
+        if args.df_suffix:
+            suffix = f"{args.df_suffix}.{suffix}"
+        elif args.use_mpi:
+            from mpi4py import MPI
+            comm = MPI.COMM_WORLD
+            rank = comm.Get_rank()
+            suffix = f"{rank}"
 
         save_df = df_filesavers[args.df_filetype]
         print(f"Writing measurements to {args.df_out}")

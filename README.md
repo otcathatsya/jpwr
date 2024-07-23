@@ -6,7 +6,7 @@ Heavily WIP.
 ```
 cd jpwr
 python -m build
-pip install dist/jwpr-0.0.7-py3-none-any.whl
+pip install dist/jwpr-0.0.8-py3-none-any.whl
 ```
 
 ## CLI tool
@@ -111,6 +111,36 @@ Writing measurements to energy_meas/
 Writing power df to energy_meas/power.jpbot-001-17.jupiter.internal.24321.h5
 Writing energy df to energy_meas/energy.jpbot-001-17.jupiter.internal.24321.h5
 ```
+
+## MPI support
+
+use `--use-mpi` to add the mpi rank as suffix to the filename:
+
+```
+ᐅ mpirun -n 2 jpwr --methods pynvml --df-out energy_meas --use-mpi -- stress-ng --gpu 2
+Measuring Energy while executing ['stress-ng', '--gpu', '2']
+Measuring Energy while executing ['stress-ng', '--gpu', '2']
+[...]
+Writing measurements to energy_meas
+Writing power df to energy_meas/power.1.h5
+Writing measurements to energy_meas
+Writing power df to energy_meas/power.0.h5
+Writing energy df to energy_meas/energy.1.h5
+Writing energy df to energy_meas/energy.0.h5
+```
+
+use `--mpi-ranks` to restring measurement to certain mpi ranks:
+
+```
+ᐅ mpirun -n 2 jpwr --methods pynvml --df-out energy_meas --use-mpi --mpi-ranks 0 -- stress-ng --gpu 2
+Executing ['stress-ng', '--gpu', '2']
+Measuring Energy while executing ['stress-ng', '--gpu', '2']
+[...]
+Writing measurements to energy_meas
+Writing power df to energy_meas/power.0.h5
+Writing energy df to energy_meas/energy.0.h5
+```
+
 
 see `src/jwpr/clitool.py` or `test/test_*.py` for programmatic/context manager usage
 
