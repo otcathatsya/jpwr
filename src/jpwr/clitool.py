@@ -116,11 +116,12 @@ def main():
 
     rank = 0
     mpi_ranks = [0]
-    if args.mpi_ranks:
-        mpi_ranks = args.mpi_ranks
+    if args.use_mpi:
         from mpi4py import MPI
         comm = MPI.COMM_WORLD
         rank = comm.Get_rank()
+    if args.mpi_ranks:
+        mpi_ranks = args.mpi_ranks
     
     if rank in mpi_ranks:
         print(f"Measuring Energy while executing {args.cmd}")
@@ -163,9 +164,6 @@ def main():
         if args.df_suffix:
             suffix = f"{args.df_suffix}.{suffix}"
         elif args.use_mpi:
-            from mpi4py import MPI
-            comm = MPI.COMM_WORLD
-            rank = comm.Get_rank()
             suffix = f"{rank}"
 
         save_df = df_filesavers[args.df_filetype]
