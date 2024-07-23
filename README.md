@@ -2,11 +2,11 @@
 
 Heavily WIP.
 
-## Build and install
+## Build and install with all optional dependencies
 ```
 cd jpwr
 python -m build
-pip install dist/jwpr-0.0.8-py3-none-any.whl
+pip install dist/jwpr-0.0.8-py3-none-any.whl\[pynvml,mpi\]
 ```
 
 ## CLI tool
