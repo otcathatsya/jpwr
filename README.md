@@ -112,6 +112,6 @@ Writing power df to energy_meas/power.jpbot-001-17.jupiter.internal.24321.h5
 Writing energy df to energy_meas/energy.jpbot-001-17.jupiter.internal.24321.h5
 ```
 
-see `src/jwpr/clitool.py` for programmatic usage
+see `src/jwpr/clitool.py` or `test/test_*.py` for programmatic/context manager usage
 
 
