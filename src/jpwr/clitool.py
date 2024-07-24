@@ -80,7 +80,7 @@ def parse_args():
         help=f"Only gather data on these mpi ranks")
     parser.add_argument("--df-suffix",
         type=str,
-        help=f"Suffix to append to created files before the node/pid")
+        help=f"Suffix to append to created files before the node/pid. An environment variable name enclosed in %q{{}} is automatically replaced by the value of the environment during runtime. Example: %q{{SLURM_PROCID}} would insert the value of $SLURM_PROCID.")
     parser.add_argument("--df-out",
         type=str,
         help=f"Directory to write dataframes with acquired power measurements to")
@@ -164,7 +164,12 @@ def main():
         import platform
         suffix = f"{platform.node()}.{os.getpid()}"
         if args.df_suffix:
-            suffix = f"{args.df_suffix}.{suffix}"
+            _this_suffix = args.df_suffix
+            if r'%q{' in args.df_suffix:
+                _match = re.search(r'%q\{(.*?)\}', args.df_suffix)
+                if _match:
+                    _this_suffix = os.getenv(_match.group(1))
+            suffix = f"{_this_suffix}.{suffix}"
         elif args.use_mpi:
             suffix = f"{rank}"
 
