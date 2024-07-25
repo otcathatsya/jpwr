@@ -1,23 +1,40 @@
 import os
 import subprocess
 import io
+import re
 import time
 
 import pandas as pd
+rocm_path = os.getenv("ROCM_PATH")
+if rocm_path is None:
+    rocm_path = "/opt/rocm/"
 try:
     from rsmiBindings import *
 except:
     import sys
-    rocm_path = os.getenv("ROCM_PATH")
-    if rocm_path is None:
-        rocm_path = "/opt/rocm/"
+    # 6.x path
     sys.path.append(os.path.join(rocm_path, "libexec/rocm_smi/"))
+    # 5.x path
+    sys.path.append(os.path.join(rocm_path, "rocm_smi/bindings"))
     from rsmiBindings import *
 from multiprocessing import Process, Queue, Event
 
 class power(object):
     def init(self, power_value_dict : dict[str,list[float]]):
-        self.rocmsmi = initRsmiBindings(silent=False)
+        init_bindings_required = True
+        try:
+            with open(os.path.join(rocm_path,'.info/version'), 'r') as vfile:
+                vstr = vfile.readline()
+                print(f"ROCM version: {vstr}")
+                vmaj = int(re.search(r'\d+', vstr).group())
+                if vmaj < 6:
+                    init_bindings_required = False
+        except:
+            init_bindings_required = False
+        if init_bindings_required:
+            self.rocmsmi = initRsmiBindings(silent=False)
+        else:
+            self.rocmsmi = rocmsmi
         ret = self.rocmsmi.rsmi_init(0)
         if rsmi_status_t.RSMI_STATUS_SUCCESS != ret:
             raise RuntimeError("Failed initializing rocm_smi library")
