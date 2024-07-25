@@ -1,8 +1,5 @@
 import os
-import subprocess
-import io
 import re
-import time
 
 import pandas as pd
 rocm_path = os.getenv("ROCM_PATH")
