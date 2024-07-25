@@ -22,6 +22,10 @@ def get_gh_method():
     from jpwr.sys.gh import power
     return power()
 
+def get_gc_method():
+    from jpwr.ipu.gc import power
+    return power()
+
 def save_df_hdf5(df : pd.DataFrame, filename : str):
     df.to_hdf(path_or_buf=filename, key="jpwr", mode='w', complib="blosc:zstd")
 
@@ -50,6 +54,7 @@ methods = {
     "pynvml": get_pynvml_method,
     "rocm": get_rocm_method,
     "gh": get_gh_method,
+    "gc": get_gc_method,
 }
 
 df_filesavers = {
