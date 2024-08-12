@@ -73,8 +73,9 @@ def parse_args():
         help=f"Interval between measurement in ms (default: {default_interval})")
     parser.add_argument("--use-mpi",
         action='store_true',
-        help=f"Use MPI rank in file suffix")
+        help=f"Use MPI and put MPI rank in file suffix. WARNING: Application must be able to handle already-initialized MPI and not call MPI_finalize().")
     parser.add_argument("--mpi-ranks",
+        metavar="rank",
         type=int,
         nargs='+',
         help=f"Only gather data on these mpi ranks")

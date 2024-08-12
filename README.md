@@ -18,6 +18,17 @@ For `jpwr` usage examples, see [CLI tool usage examples](#cli-tool-usage-example
 
 For programmatic usage, please refer to either the [cli tool source](src/jpwr/clitool.py) or the [tests](test).
 
+## Quickstart
+
+```
+$ pipx install git+https://github.com/FZJ-JSC/jpwr
+$ jpwr -h
+usage: clitool.py [-h] --methods {pynvml,rocm,gh} [{pynvml,rocm,gh} ...] [--interval INTERVAL] [--use-mpi] [--mpi-ranks rank [rank ...]] [--df-suffix DF_SUFFIX] [--df-out DF_OUT] [--df-filetype {h5,csv}] ...
+
+jpwr - JSC power measurement tool
+[...]
+```
+
 ## Build and install with all optional dependencies
 ```
 cd jpwr
