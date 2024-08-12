@@ -1,6 +1,22 @@
 # JSC power tool
 
-Heavily WIP.
+JPWR is a modular tool for measuring power and energy of different compute devices. Right now the tool supports methods for querying AMD GPUs, NVIDIA GPUs and specific methods for getting system power on NVIDIA Grace-Hopper nodes.
+
+Basic functionality is provided by starting a power-measurement loop in a separate thread that uses device-specific interfaces to query device power periodically, saving the datapoints along with timestamps internally and calculating the energy consumed at the end of operation.
+
+The device-specific interfaces are called "methods" and are implemented in:
+
+| Backend            | Method name | Source code                                      |
+| ------------------ | ----------- | ------------------------------------------------ |
+| ROCM smi           | rocm        | [src/jpwr/gpu/rocm.py](src/jpwr/gpu/rocm.py)     |
+| PyNVML             | pynvml      | [src/jpwr/gpu/pynvml.py](src/jpwr/gpu/pynvml.py) |
+| Grace-Hopper sysfs | gh          | [src/jpwr/sys/gh.py](src/jpwr/sys/gh.py)         |
+
+The user can choose to use either the command-line tool `jpwr` or use the `get_power` context manager from [src/jpwr/ctxmgr.py](src/jpwr/ctxmgr.py) programmatically on ROIs withing a python program.
+
+For `jpwr` usage examples, see [CLI tool usage examples](#cli-tool-usage-examples).
+
+For programmatic usage, please refer to either the [cli tool source](src/jpwr/clitool.py) or the [tests](test).
 
 ## Build and install with all optional dependencies
 ```
@@ -9,7 +25,7 @@ python -m build
 pip install dist/jwpr-0.0.8-py3-none-any.whl\[pynvml,mpi\]
 ```
 
-## CLI tool
+## CLI tool usage examples
 ROCM-supported GPU:
 ```
 ᐅ jpwr --methods rocm --df-out energy_meas --df-filetype csv stress-ng --gpu 8 -t 5
@@ -140,8 +156,3 @@ Writing measurements to energy_meas
 Writing power df to energy_meas/power.0.h5
 Writing energy df to energy_meas/energy.0.h5
 ```
-
-
-see `src/jwpr/clitool.py` or `test/test_*.py` for programmatic/context manager usage
-
-

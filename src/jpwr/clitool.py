@@ -80,7 +80,7 @@ def parse_args():
         help=f"Only gather data on these mpi ranks")
     parser.add_argument("--df-suffix",
         type=str,
-        help=f"Suffix to append to created files before the node/pid. An environment variable name enclosed in %q{{}} is automatically replaced by the value of the environment during runtime. Example: %q{{SLURM_PROCID}} would insert the value of $SLURM_PROCID.")
+        help=f"Suffix to append to created files before the node/pid. An environment variable name enclosed in %%q{{}} is automatically replaced by the value of the environment during runtime. Example: %%q{{SLURM_PROCID}} would insert the value of $SLURM_PROCID.")
     parser.add_argument("--df-out",
         type=str,
         help=f"Directory to write dataframes with acquired power measurements to")
@@ -186,4 +186,5 @@ def main():
             print(f"Writing {k} df to {additional_path}")
             save_df(v, additional_path)
 
-        
+if "__main__" == __name__:
+    main()
