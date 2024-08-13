@@ -1,6 +1,6 @@
 # JSC power tool
 
-JPWR is a modular tool for measuring power and energy of different compute devices. Right now the tool supports methods for querying AMD GPUs, NVIDIA GPUs and specific methods for getting system power on NVIDIA Grace-Hopper nodes.
+JPWR is a modular tool for measuring power and energy of different compute devices. Right now the tool supports methods for querying AMD GPUs, NVIDIA GPUs, specific methods for getting system power on NVIDIA Grace-Hopper nodes and the GraphCore GC200 IPU.
 
 Basic functionality is provided by starting a power-measurement loop in a separate thread that uses device-specific interfaces to query device power periodically, saving the datapoints along with timestamps internally and calculating the energy consumed at the end of operation.
 
@@ -11,6 +11,7 @@ The device-specific interfaces are called "methods" and are implemented in:
 | ROCM smi           | rocm        | [src/jpwr/gpu/rocm.py](src/jpwr/gpu/rocm.py)     |
 | PyNVML             | pynvml      | [src/jpwr/gpu/pynvml.py](src/jpwr/gpu/pynvml.py) |
 | Grace-Hopper sysfs | gh          | [src/jpwr/sys/gh.py](src/jpwr/sys/gh.py)         |
+| GraphCore IPU info | gc          | [src/jpwr/ipu/gc.py](src/jpwr/ipu/gc.py)         |
 
 The user can choose to use either the command-line tool `jpwr` or use the `get_power` context manager from [src/jpwr/ctxmgr.py](src/jpwr/ctxmgr.py) programmatically on ROIs withing a python program.
 
