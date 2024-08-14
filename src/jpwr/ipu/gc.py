@@ -12,18 +12,19 @@ class power(object):
             return float(pow[:-1])
         except ValueError:
             return 0
-    def init(self, power_value_dict : dict[str,list[float]]):
+    def init(self, power_value_dict):
         import gcipuinfo
         self.ipu_info = gcipuinfo.gcipuinfo()
         device_count = len(self.ipu_info.getDevices())
         self.device_list = [idx for idx in range(device_count)]
         power_value_dict.update({
-            f"gc:{idx}" : [] for idx in enumerate(self.device_list)
+            f"gc:{idx}" : [] for idx,_ in enumerate(self.device_list)
         })
-    def measure(self, power_value_dict : dict[str,list[float]]):
+    def measure(self, power_value_dict):
+        import gcipuinfo
         device_powers=self.ipu_info.getNamedAttributeForAll(gcipuinfo.IpuPower)
         device_powers = [self.pow_to_float(pow) for pow in device_powers if pow != "N/A"]
-        for idx in self.device_list:
+        for idx,_ in enumerate(self.device_list):
             power_value_dict[f"gc:{idx}"].append(device_powers[idx])
-    def finalize(self, power_value_dict : dict[str,list[float]]):
+    def finalize(self, power_value_dict):
         return {}
