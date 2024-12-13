@@ -3,7 +3,7 @@ from multiprocessing import Process, Queue, Event
 
 import pandas as pd
 
-def power_loop(queue, event, interval, power_methods):
+def power_loop(queue, event, interval, power_methods, options):
     power_value_dict = {
         'timestamps': []
     }
@@ -15,10 +15,14 @@ def power_loop(queue, event, interval, power_methods):
     last_timestamp = time.time()
 
     while not event.is_set():
-        for pmethod in power_methods:
-            pmethod.measure(power_value_dict)
-        timestamp = time.time()
-        power_value_dict['timestamps'].append(timestamp)
+        try:
+            for pmethod in power_methods:
+                pmethod.measure(power_value_dict)
+            timestamp = time.time()
+            power_value_dict['timestamps'].append(timestamp)
+        except:
+            if not options['ignore_measure_errors']:
+                raise RuntimeError("Measurement error")
         wait_for = max(0,1e-3*interval-(timestamp-last_timestamp))
         time.sleep(wait_for)
         last_timestamp = timestamp
@@ -32,15 +36,16 @@ def power_loop(queue, event, interval, power_methods):
 
 class get_power(object):
     
-    def __init__(self, power_methods, interval):
+    def __init__(self, power_methods, interval, options={}):
         self.power_methods = power_methods
         self.interval = interval
+        self.options = options
     def __enter__(self):
         self.end_event = Event()
         self.power_queue = Queue()
         
         self.pwp = Process(target=power_loop,
-                args=(self.power_queue, self.end_event, self.interval, self.power_methods))
+                args=(self.power_queue, self.end_event, self.interval, self.power_methods, self.options))
         self.pwp.start()
         return self
     def __exit__(self, type, value, traceback):
