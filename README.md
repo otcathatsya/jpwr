@@ -142,8 +142,7 @@ Writing energy df to energy_meas/energy.jpbot-001-17.jupiter.internal.24321.h5
 
 ## MPI support
 
-> [!CAUTION]
-> `--use-mpi` will initialize MPI inside of the jpwr tool, which very likely will lead to errors when the profiled application tries to initialize MPI itself. For now please use `--df-suffix` in conjunction with environment variables using the `%q{}` syntax to generate unique filenames.
+> :warning: `--use-mpi` will initialize MPI inside of the jpwr tool, which very likely will lead to errors when the profiled application tries to initialize MPI itself. For now please use `--df-suffix` in conjunction with environment variables using the `%q{}` syntax to generate unique filenames.
 
 use `--use-mpi` to add the mpi rank as suffix to the filename:
 
