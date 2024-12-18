@@ -168,3 +168,7 @@ Writing measurements to energy_meas
 Writing power df to energy_meas/power.0.h5
 Writing energy df to energy_meas/energy.0.h5
 ```
+
+## Ignore measurement errors
+
+There appears to be an issue with pynvml sometimes erroring out when measuring device power, the `--ignore-measure-errors` option was added to the tool to skip a measurement if any of the power methods error out/return an exception. Without that flag, the measuring process will crash if an error occurs.

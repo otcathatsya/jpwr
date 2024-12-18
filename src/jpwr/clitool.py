@@ -79,6 +79,9 @@ def parse_args():
     parser.add_argument("--use-mpi",
         action='store_true',
         help=f"Use MPI and put MPI rank in file suffix. WARNING: Application must be able to handle already-initialized MPI and not call MPI_finalize().")
+    parser.add_argument("--ignore-measure-errors",
+        action='store_true',
+        help=f"If an error/exception occurs during measurement, skip the measurement")
     parser.add_argument("--mpi-ranks",
         metavar="rank",
         type=int,
@@ -117,6 +120,9 @@ def main():
         print("--mpi-ranks requires --use-mpi")
         exit(-2)
 
+    options = {
+        "ignore_measure_errors" : args.ignore_measure_errors
+    }
     
     power_methods = [methods[m]() for m in set(args.methods)]
 
@@ -130,10 +136,11 @@ def main():
         rank = comm.Get_rank()
     if args.mpi_ranks:
         mpi_ranks = args.mpi_ranks
+
     
     if rank in mpi_ranks:
         print(f"Measuring Energy while executing {args.cmd}")
-        with get_power(power_methods, args.interval) as measured_scope:
+        with get_power(power_methods, args.interval, options) as measured_scope:
             try:
                 result = subprocess.run(args.cmd, text=True)
             except Exception as exc:
