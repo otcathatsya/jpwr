@@ -1,6 +1,8 @@
 import os
 import re
 
+import gcipuinfo
+
 import pandas as pd
 
 
@@ -13,7 +15,6 @@ class power(object):
         except ValueError:
             return 0
     def init(self, power_value_dict):
-        import gcipuinfo
         self.ipu_info = gcipuinfo.gcipuinfo()
         device_count = len(self.ipu_info.getDevices())
         self.device_list = [idx for idx in range(device_count)]
@@ -21,7 +22,6 @@ class power(object):
             f"gc:{idx}" : [] for idx,_ in enumerate(self.device_list)
         })
     def measure(self, power_value_dict):
-        import gcipuinfo
         device_powers=self.ipu_info.getNamedAttributeForAll(gcipuinfo.IpuPower)
         device_powers = [self.pow_to_float(pow) for pow in device_powers if pow != "N/A"]
         for idx,_ in enumerate(self.device_list):

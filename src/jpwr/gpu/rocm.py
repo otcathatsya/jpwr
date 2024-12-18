@@ -22,7 +22,6 @@ class power(object):
         try:
             with open(os.path.join(rocm_path,'.info/version'), 'r') as vfile:
                 vstr = vfile.readline()
-                print(f"ROCM version: {vstr}")
                 vmaj = int(re.search(r'\d+', vstr).group())
                 if vmaj < 6:
                     init_bindings_required = False
