@@ -1,6 +1,3 @@
-import os
-
-import pandas as pd
 from pynvml import *
 
 class power(object):

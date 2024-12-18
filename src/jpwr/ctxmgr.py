@@ -21,6 +21,14 @@ def power_loop(queue, event, interval, power_methods, options):
             timestamp = time.time()
             power_value_dict['timestamps'].append(timestamp)
         except:
+            # We want timestamp to be measured after the power methods,
+            # so instead of measuring it outside the try/except, measure
+            # it in both
+            timestamp = time.time()
+            keep_values_upto = len(power_value_dict["timestamps"])
+            not_timestamps = [k for k in power_value_dict if k != "timestamps"]
+            for key in not_timestamps:
+                power_value_dict[key] = power_value_dict[key][:keep_values_upto]
             if not options['ignore_measure_errors']:
                 raise RuntimeError("Measurement error")
         wait_for = max(0,1e-3*interval-(timestamp-last_timestamp))
