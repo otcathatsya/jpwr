@@ -58,10 +58,9 @@ class get_power(object):
         return self
     def __exit__(self, type, value, traceback):
         self.end_event.set()
+        self.pwp.join()
         power_value_dict = self.power_queue.get()
         self.additional_data = self.power_queue.get()
-        self.pwp.join()
-
         self.df = pd.DataFrame(power_value_dict)
     def energy(self):
         import numpy as np
